@@ -15,6 +15,7 @@ RUN apt-get update \
     liblwgeom-dev \
     libpq-dev \
     libprotobuf-dev \
+    libproj-dev \
     libnetcdf-dev \
     libsqlite3-dev \
     libssl-dev \
@@ -29,7 +30,7 @@ RUN apt-get update \
 # Adapted from https://github.com/r-spatial/sf/blob/master/inst/docker/gdal/Dockerfile
 
 # PROJ:
-ENV PROJ_VERSION=5.0.0
+ENV PROJ_VERSION=6.0.0
 ENV LD_LIBRARY_PATH=/usr/local/lib:$LD_LIBRARY_PATH
 
 RUN wget http://download.osgeo.org/proj/proj-${PROJ_VERSION}.tar.gz \
@@ -52,26 +53,39 @@ RUN cd /usr/local/share/proj \
 #ENV GEOS_VERSION 3.6.2
 ENV GEOS_VERSION 3.7.0
 #
-#RUN wget http://download.osgeo.org/geos/geos-${GEOS_VERSION}.tar.bz2 \
-#  && bzip2 -d geos-*bz2 \
-#  && tar xf geos*tar \
-#  && cd geos* \
-#  && ./configure \
-#  && make \
+RUN wget http://download.osgeo.org/geos/geos-${GEOS_VERSION}.tar.bz2 \
+  && bzip2 -d geos-*bz2 \
+  && tar xf geos*tar \
+  && cd geos* \
+  && ./configure \
+  && make \
+  && make install \
+  && cd .. \
+  && ldconfig \
+  && rm -rf geo*
+
+# GDAL:
+ENV GDAL_VERSION=3.0.1
+ENV GDAL_VERSION_NAME=3.0.1
+#COPY --from=rocker/gdal /gdal-${GDAL_VERSION_NAME} /gdal-${GDAL_VERSION_NAME}
+#RUN cd gdal-${GDAL_VERSION_NAME} \
 #  && make install \
 #  && cd .. \
 #  && ldconfig \
-#  && rm -rf geo*
+#  && rm -rf gdal*
 
-# GDAL:
-ENV GDAL_VERSION=2.5.0
-ENV GDAL_VERSION_NAME=2.5.0
-COPY --from=rocker/gdal /gdal-${GDAL_VERSION} /gdal-${GDAL_VERSION}
-RUN cd gdal-${GDAL_VERSION} \
+
+RUN wget http://download.osgeo.org/gdal/${GDAL_VERSION}/gdal-${GDAL_VERSION_NAME}.tar.gz \
+  && tar -xf gdal-${GDAL_VERSION_NAME}.tar.gz \
+  && cd gdal-${GDAL_VERSION} \
+  && ./configure \
+  && make -j2 \
   && make install \
   && cd .. \
   && ldconfig \
   && rm -rf gdal*
+
+
 
 
 RUN install2.r --error \
@@ -82,6 +96,7 @@ RUN install2.r --error \
     deldir \
     gstat \
     hdf5r \
+    lwgeom \
     lidR \
     mapdata \
     maptools \
