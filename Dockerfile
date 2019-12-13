@@ -1,4 +1,4 @@
-FROM rocker/verse:3.6.1
+FROM rocker/rstudio
 MAINTAINER "Carl Boettiger" cboettig@ropensci.org
 
 RUN apt-get update \
