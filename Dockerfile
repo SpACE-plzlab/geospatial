@@ -35,11 +35,9 @@ RUN apt-get update \
     deldir \
     gstat \
     hdf5r \
-    lidR \
     lwgeom \
     mapdata \
     maptools \
-    mapview \
     ncdf4 \
     proj4 \
     raster \
