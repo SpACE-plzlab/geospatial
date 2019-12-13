@@ -53,5 +53,6 @@ RUN apt-get update \
     tmap \
     geoR \
     geosphere \
+    BiocManager \
     ## from bioconductor
     && R -e "BiocManager::install('rhdf5')"
